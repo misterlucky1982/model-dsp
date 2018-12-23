@@ -115,6 +115,7 @@ public class Edging implements FullName {
 
 	@Override
 	public String getFullNameInLine() {
+		if(this.thickness==0||this.width==0)return this.color.getFullNameInLine();
 		StringBuilder sb = new StringBuilder();
 		sb.append(this.color.getName());
 		sb.append(" ");
