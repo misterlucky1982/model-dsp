@@ -27,5 +27,17 @@ public final class Fibreboard extends Material{
 	public String getFullNameInLine(){
 		return this.toString();
 	}
+	
+	public void setColor(Color color){
+		throw new RuntimeException();
+	}
+	
+	public void setColor(String colorName){
+		throw new RuntimeException();
+	}
+	
+	public void setThickness(int thickness){
+		throw new RuntimeException();
+	}
 
 }
