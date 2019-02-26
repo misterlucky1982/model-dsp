@@ -1,6 +1,6 @@
 package by.dsp.model;
 
-public class Material implements FullName{
+public class Material implements FullName, Comparable{
 	
 	private Color color;
 	private int thickness;
@@ -75,6 +75,12 @@ public class Material implements FullName{
 
 	public String getFullNameInLine() {
 		return this.color.getName()+" "+this.thickness+"mm";
+	}
+
+	@Override
+	public int compareTo(Object o) {
+		// TODO Auto-generated method stub
+		return this.getFullNameInLine().compareTo(((FullName)o).getFullNameInLine());
 	}
 
 }

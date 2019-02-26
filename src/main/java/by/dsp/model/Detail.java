@@ -3,12 +3,14 @@ package by.dsp.model;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
-public class Detail {
+public class Detail implements Comparable {
 
 	private static int MINIMUM_EDGING_SIZE = 80;
-	private static int MINIMUM_SHORT_SIZE_FOR_LONG_EDGING = 80;
+	private static int MINIMUM_SHORT_SIZE_FOR_LONG_EDGING = 70;
 	private static int ADDITION_FOR_DOUBLE_LAYERED_DETAIL = 20;
+	private static int MINIMUM_SIZE = 70;
 	private static int CUT_WIDTH = 4;
 	public static int MAX_HEIGHT = 2800;
 	public static int MAX_WIDTH = 2070;
@@ -127,6 +129,12 @@ public class Detail {
 		if (this.edgings == null)
 			this.edgings = new Edging[4];
 		return this.edgings;
+	}
+	
+	public int getEdgedSidesAmount(){
+		int amount = 0;
+		for(Edging ed:this.edgings)if(ed!=null)amount++;
+		return amount;
 	}
 
 	public Edging getUsedEdging() {
@@ -306,12 +314,12 @@ public class Detail {
 	public void appendRemark(String remark) {
 		this.remark.concat(remark);
 	}
-	
-	public  void setDetailScheme(Object detailScheme){
+
+	public void setDetailScheme(Object detailScheme) {
 		this.detailScheme = detailScheme;
 	}
-	
-	public Object getDetailScheme(){
+
+	public Object getDetailScheme() {
 		return this.detailScheme;
 	}
 
@@ -375,8 +383,11 @@ public class Detail {
 			return false;
 		if (this.isDoubleLayer != temp.isDoubleLayer)
 			return false;
-		if(this.detailScheme==null&&temp.detailScheme!=null)return false;
-		if(this.detailScheme!=null)if(!this.detailScheme.equals(temp.detailScheme))return false;
+		if (this.detailScheme == null && temp.detailScheme != null)
+			return false;
+		if (this.detailScheme != null)
+			if (!this.detailScheme.equals(temp.detailScheme))
+				return false;
 		return this.remark.equals(temp.remark);
 	}
 
@@ -401,7 +412,7 @@ public class Detail {
 			temp += this.material.hashCode();
 		temp -= (this.remark.hashCode() * this.remark.length());
 		if (this.isDoubleLayer)
-			temp+=333;
+			temp += 333;
 		if (this.milling)
 			temp++;
 		QuarterSpace[] qs = this.getQuarterSpace();
@@ -418,7 +429,8 @@ public class Detail {
 		}
 		if (temp < 0)
 			temp *= -1;
-		if(this.detailScheme!=null)temp+=this.detailScheme.hashCode();
+		if (this.detailScheme != null)
+			temp += this.detailScheme.hashCode();
 		return temp;
 	}
 
@@ -491,31 +503,31 @@ public class Detail {
 				sb.append(0);
 		}
 	}
-	
-	public void setPrimaryDetailsForCut(List<Detail>list){
+
+	public void setPrimaryDetailsForCut(List<Detail> list) {
 		this.primaryDetailsForCut = list;
 	}
-	
-	public boolean isPrimaryDetailsListIsChanged(){
-		return this.primaryDetailsForCut!=null;
+
+	public boolean isPrimaryDetailsListIsChanged() {
+		return this.primaryDetailsForCut != null;
 	}
-	
-	public List<Detail> getPrimaryDetailsForCut(){
-		if(this.primaryDetailsForCut!=null){
+
+	public List<Detail> getPrimaryDetailsForCut() {
+		if (this.primaryDetailsForCut != null) {
 			return this.primaryDetailsForCut;
-		}else{
-			List<Detail>temp = new ArrayList<>();
+		} else {
+			List<Detail> temp = new ArrayList<>();
 			temp.add(this);
 			return Detail.getPrimaryDetailsForCut(temp);
 		}
-		
+
 	}
 
 	public List<Operation> getOperationList() {
 		return this.operations;
 	}
-	
-	public void setOperationsList(List<Operation>list){
+
+	public void setOperationsList(List<Operation> list) {
 		this.operations = list;
 	}
 
@@ -534,9 +546,10 @@ public class Detail {
 		this.detailScheme = detail.detailScheme;
 		for (Operation operation : detail.operations)
 			this.operations.add(operation);
-		if(detail.primaryDetailsForCut!=null){
+		if (detail.primaryDetailsForCut != null) {
 			this.primaryDetailsForCut = new ArrayList<Detail>();
-			for(Detail d:detail.primaryDetailsForCut)this.primaryDetailsForCut.add(d);
+			for (Detail d : detail.primaryDetailsForCut)
+				this.primaryDetailsForCut.add(d);
 		}
 
 	}
@@ -789,9 +802,10 @@ public class Detail {
 	public static List<Detail> getPrimaryDetailsForCut(List<Detail> list) {
 		List<Detail> result = new ArrayList<>();
 		for (Detail detail : list) {
-			if(detail.isPrimaryDetailsListIsChanged()){
-				List<Detail>changed = detail.getPrimaryDetailsForCut();
-				for(Detail det:changed)result.add(det);
+			if (detail.isPrimaryDetailsListIsChanged()) {
+				List<Detail> changed = detail.getPrimaryDetailsForCut();
+				for (Detail det : changed)
+					result.add(det);
 				continue;
 			}
 			Detail temp = new Detail();
@@ -800,19 +814,23 @@ public class Detail {
 			temp.setAmount(detail.amount);
 			temp.setMaterial(detail.material);
 			temp.isOrientationFixed = detail.isOrientationFixed;
-			copyEdgings(detail, temp);
-			checkingEdgedSidesSize(detail, temp, remark);
+			copyEdgings(detail,temp);
+			if (!checkEdgedPerimeterWithShortSides(detail, temp, remark)) {
+				if (!check3from4SidesWithShortSize(detail, temp, remark))
+					checkingEdgedSidesSize(detail, temp, remark);
+			}
 			copyGrooves(detail, temp);
 			copyQuaterSpaces(detail, temp);
 			copyAndCheckingDoubleLayeringAndMilling(detail, temp, remark, result);
 			temp.remark = remark.toString();
 			result.add(temp);
 		}
-		return result;
+		return result.stream().sorted((d1, d2) -> d1.compareTo(d2)).collect(Collectors.toList());
 	}
 
-	private static void copyEdgings(Detail first, Detail second) {
+	private static Edging[] copyEdgings(Detail first, Detail second) {
 		second.setEdging(first.getEdging());
+		return second.getEdging();
 	}
 
 	private static void copyGrooves(Detail first, Detail second) {
@@ -833,13 +851,17 @@ public class Detail {
 		if (detail.isDoubleLayer) {
 			temp.height = detail.height + Detail.ADDITION_FOR_DOUBLE_LAYERED_DETAIL;
 			temp.width = detail.width + Detail.ADDITION_FOR_DOUBLE_LAYERED_DETAIL;
+			String rem = "сростка " + detail.height + "x" + detail.width;
+			if (remark.length() > 0)
+				remark.append(", ");
+			remark.append(rem);
 			temp2 = new Detail();
 			temp2.copyForSecondLayer(temp);
 			temp2.operations.clear();
 			temp.operations.add(0, Operation.TO_43);
 			temp.operations.add(1, Operation.TO_17);
 			temp2.operations.add(0, Operation.TO_44);
-			temp2.operations.add(1,Operation.TO_17);
+			temp2.operations.add(1, Operation.TO_17);
 		}
 		temp.milling = detail.milling;
 		if (temp.milling) {
@@ -878,7 +900,128 @@ public class Detail {
 		}
 	}
 
-	@SuppressWarnings("unused")
+	private static boolean check3from4SidesWithShortSize(Detail detail, Detail temp, StringBuilder remark) {
+		if(temp.getEdgedSidesAmount()!=3)return false;
+		Edging ed[] = temp.getEdging();
+		if(temp.width<Detail.MINIMUM_EDGING_SIZE&&(ed[0]!=null&&ed[1]!=null)){
+			if(temp.width<Detail.MINIMUM_SIZE){
+				temp.width=(int)((double)temp.width-ed[0].getThickness()-ed[1].getThickness());
+				int width = temp.width;
+				temp.width = Detail.MINIMUM_SIZE;
+				temp.operations.add(Operation.TO_17);
+				temp.operations.add(Operation.TO_41);
+				remark.append("перед оклейкой обрезать в размер:"+temp.height+"x"+width);
+				return true;
+			}
+			temp.width=(int)((double)temp.width-ed[0].getThickness()-ed[1].getThickness());
+			temp.operations.add(Operation.TO_41);
+			return true;
+		}
+		if(temp.width<Detail.MINIMUM_EDGING_SIZE&&(ed[2]!=null&&ed[3]!=null)){
+			if(detail.amount%2==0&&detail.width*2>=Detail.MINIMUM_SHORT_SIZE_FOR_LONG_EDGING&&detail.width*2>=Detail.MINIMUM_EDGING_SIZE){
+				temp.amount=detail.amount/2;
+				temp.width*=2;
+				temp.width+=Detail.CUT_WIDTH;
+				remark.append("распустить после оклейки "+detail.height+"x"+detail.width+" - "+detail.amount+"шт.");
+				if(ed[0]!=null){
+					ed[1] = ed[0];
+				}else ed[0] = ed[1];
+				temp.operations.add(Operation.TO_21);
+				temp.operations.add(Operation.TO_16);
+				return true;
+			}else{
+				int min = Detail.MINIMUM_EDGING_SIZE;
+				if(min>Detail.MINIMUM_SHORT_SIZE_FOR_LONG_EDGING)min = Detail.MINIMUM_SHORT_SIZE_FOR_LONG_EDGING;
+				if(detail.width<min){
+					temp.width = min;
+					temp.operations.add(Operation.TO_21);
+					temp.operations.add(Operation.TO_16);
+					remark.append("распустить после оклейки:"+detail.height+"x"+detail.width);
+					return true;
+				}
+			}
+		}
+		if(temp.height<Detail.MINIMUM_EDGING_SIZE&&(ed[0]!=null&&ed[1]!=null)){
+			if(detail.amount%2==0&&detail.height*2>=Detail.MINIMUM_SHORT_SIZE_FOR_LONG_EDGING&&detail.height*2>=Detail.MINIMUM_EDGING_SIZE){
+				temp.amount=detail.amount/2;
+				temp.height*=2;
+				temp.height=Detail.CUT_WIDTH;
+				remark.append("распустить после оклейки "+detail.height+"x"+detail.width+" - "+detail.amount+"шт.");
+				if(ed[2]!=null){
+					ed[3] = ed[2];
+				}else ed[2] = ed[3];
+				temp.operations.add(Operation.TO_21);
+				temp.operations.add(Operation.TO_16);
+				return true;
+			}else{
+				int min = Detail.MINIMUM_EDGING_SIZE;
+				if(min>Detail.MINIMUM_SHORT_SIZE_FOR_LONG_EDGING)min = Detail.MINIMUM_SHORT_SIZE_FOR_LONG_EDGING;
+				if(detail.height<min){
+					temp.height = min;
+					temp.operations.add(Operation.TO_21);
+					temp.operations.add(Operation.TO_16);
+					remark.append("распустить после оклейки:"+detail.height+"x"+detail.width);
+					return true;
+				}
+			}
+		}
+		if(temp.height<Detail.MINIMUM_EDGING_SIZE&&(ed[2]!=null&&ed[3]!=null)){
+			if(temp.height<Detail.MINIMUM_SIZE){
+				temp.height=(int)((double)temp.height-ed[0].getThickness()-ed[1].getThickness());
+				int height = temp.height;
+				temp.height = Detail.MINIMUM_SIZE;
+				temp.operations.add(Operation.TO_17);
+				temp.operations.add(Operation.TO_41);
+				remark.append("перед оклейкой обрезать в размер:"+temp.height+"x"+height);
+				return true;
+			}
+			temp.height=(int)((double)temp.height-ed[0].getThickness()-ed[1].getThickness());
+			temp.operations.add(Operation.TO_41);
+			return true;
+		}
+		return false;
+	}
+
+	private static boolean checkEdgedPerimeterWithShortSides(Detail detail, Detail temp, StringBuilder remark) {
+		Edging ed[] = temp.getEdging();
+		int min = Detail.MINIMUM_EDGING_SIZE;
+		boolean edit = false;
+		if (min < Detail.MINIMUM_SHORT_SIZE_FOR_LONG_EDGING)
+			min = Detail.MINIMUM_SHORT_SIZE_FOR_LONG_EDGING;
+		if (!(ed[0] != null & ed[1] != null & ed[2] != null & ed[3] != null))
+			return false;
+		if (temp.width < temp.height) {
+			if (temp.width < min) {
+				temp.width = min;
+				if (temp.height < min)
+					temp.height = min;
+				edit = true;
+			} else
+				return false;
+		} else {
+			if (temp.height < min) {
+				temp.height = min;
+				if (temp.width < min)
+					temp.width = min;
+				edit = true;
+			} else
+				return false;
+		}
+		if (edit) {
+			temp.operations.add(Operation.TO_21);
+			temp.operations.add(Operation.TO_16);
+			temp.operations.add(Operation.TO_41);
+			int height = detail.height;
+			int width = detail.width;
+			if (detail.height < min)
+				height -= (int) detail.edgings[0].getThickness();
+			if (detail.width < min)
+				width -= (int) detail.edgings[2].getThickness();
+			remark.append("чистый размер:" + height + "x" + width);
+		}
+		return edit;
+	}
+
 	private static void checkingEdgedSidesSize(Detail detail, Detail temp, StringBuilder remark) {
 		if (Detail.bothLongSidesEdgedWithShortWidth(detail, temp, remark))
 			return;
@@ -1071,13 +1214,13 @@ public class Detail {
 			this.detail.milling = milling;
 			return this;
 		}
-		
-		public Builder setPrymaryDetailsForCut(List<Detail>list){
+
+		public Builder setPrymaryDetailsForCut(List<Detail> list) {
 			this.detail.primaryDetailsForCut = list;
 			return this;
 		}
-		
-		public Builder setDetailScheme(Object detailScheme){
+
+		public Builder setDetailScheme(Object detailScheme) {
 			this.detail.detailScheme = detailScheme;
 			return this;
 		}
@@ -1091,6 +1234,12 @@ public class Detail {
 			return this.detail;
 		}
 
+	}
+
+	@Override
+	public int compareTo(Object arg0) {
+		// TODO Auto-generated method stub
+		return this.material.compareTo(((Detail) arg0).getMaterial());
 	}
 
 }
