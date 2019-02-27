@@ -11,6 +11,7 @@ public class ProxiDspObject {
 	private String articleName;
 	private int materialThickness;
 	
+	
 	public ProxiDspObject(){
 		
 	}
@@ -105,7 +106,7 @@ public class ProxiDspObject {
 	}
 	
 	public boolean isColorIsSaved(){
-		return this.colorId==0;
+		return this.colorId!=0;
 	}
 	
 	public boolean colorNameNotNull(){
@@ -126,6 +127,64 @@ public class ProxiDspObject {
 	
 	public void setMaterialThickness(int materialThickness) {
 		this.materialThickness = materialThickness;
+	}
+
+	
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((articleName == null) ? 0 : articleName.hashCode());
+		result = prime * result + (int) (colorId ^ (colorId >>> 32));
+		result = prime * result + ((colorName == null) ? 0 : colorName.hashCode());
+		result = prime * result + ((colorPicture == null) ? 0 : colorPicture.hashCode());
+		result = prime * result + (colorShow ? 1231 : 1237);
+		result = prime * result + (colorStructure ? 1231 : 1237);
+		result = prime * result + ((item == null) ? 0 : item.hashCode());
+		result = prime * result + materialThickness;
+		return result;
+	}
+
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ProxiDspObject other = (ProxiDspObject) obj;
+		if (articleName == null) {
+			if (other.articleName != null)
+				return false;
+		} else if (!articleName.equals(other.articleName))
+			return false;
+		if (colorId != other.colorId)
+			return false;
+		if (colorName == null) {
+			if (other.colorName != null)
+				return false;
+		} else if (!colorName.equals(other.colorName))
+			return false;
+		if (colorPicture == null) {
+			if (other.colorPicture != null)
+				return false;
+		} else if (!colorPicture.equals(other.colorPicture))
+			return false;
+		if (colorShow != other.colorShow)
+			return false;
+		if (colorStructure != other.colorStructure)
+			return false;
+		if (item == null) {
+			if (other.item != null)
+				return false;
+		} else if (!item.equals(other.item))
+			return false;
+		if (materialThickness != other.materialThickness)
+			return false;
+		return true;
 	}
 
 
