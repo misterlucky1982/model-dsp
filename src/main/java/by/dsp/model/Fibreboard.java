@@ -1,42 +1,47 @@
 package by.dsp.model;
 
-public final class Fibreboard extends Material{
-	
-	public Fibreboard(){
-		super.setThickness(4);
+public final class Fibreboard extends Material {
+
+	public static final String FIBREBOARD = "ДВП";
+	public static final int DEFAULT_THICKNESS = 4;
+
+	public Fibreboard() {
+		super(FIBREBOARD, DEFAULT_THICKNESS);
 	}
 	
-	@Override
-	public int hashCode(){
-		return 4;
+	public Fibreboard(int thickness){
+		super(new Color(),thickness);
 	}
-	
+
 	@Override
-	public String toString(){
-		return "ДВП 4мм";
+	public int hashCode() {
+		return this.getThickness();
 	}
-	
+
 	@Override
-	public boolean equals(Object ob){
-		if(ob==null)return false;
-		if(!ob.getClass().equals(this.getClass()))return false;
-		return true;
+	public String toString() {
+		return FIBREBOARD + " " + this.getThickness() + "мм";
 	}
-	
+
 	@Override
-	public String getFullNameInLine(){
+	public boolean equals(Object ob) {
+		if (ob == null)
+			return false;
+		if (!ob.getClass().equals(this.getClass()))
+			return false;
+		return (((Fibreboard)ob).getThickness()==this.getThickness());
+	}
+
+	@Override
+	public String getFullNameInLine() {
 		return this.toString();
 	}
-	
-	public void setColor(Color color){
+
+	public void setColor(Color color) {
 		throw new RuntimeException();
 	}
-	
-	public void setColor(String colorName){
-		throw new RuntimeException();
-	}
-	
-	public void setThickness(int thickness){
+
+	public void setColor(String colorName) {
 		throw new RuntimeException();
 	}
 

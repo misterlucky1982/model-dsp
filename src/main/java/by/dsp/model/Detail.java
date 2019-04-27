@@ -5,15 +5,15 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class Detail implements Comparable {
+public class Detail implements Comparable<Detail> {
 
-	private static int MINIMUM_EDGING_SIZE = 80;
-	private static int MINIMUM_SHORT_SIZE_FOR_LONG_EDGING = 70;
-	private static int ADDITION_FOR_DOUBLE_LAYERED_DETAIL = 20;
-	private static int MINIMUM_SIZE = 70;
-	private static int CUT_WIDTH = 4;
-	public static int MAX_HEIGHT = 2800;
-	public static int MAX_WIDTH = 2070;
+	public static final int MINIMUM_EDGING_SIZE = 80;
+	public static final int MINIMUM_SHORT_SIZE_FOR_LONG_EDGING = 70;
+	public static final int ADDITION_FOR_DOUBLE_LAYERED_DETAIL = 20;
+	public static final int MINIMUM_SIZE = 70;
+	public static final int CUT_WIDTH = 4;
+	public static final int MAX_HEIGHT = 2780;
+	public static final int MAX_WIDTH = 2050;
 
 	private Object detailScheme;
 	private List<Detail> primaryDetailsForCut;
@@ -1237,9 +1237,28 @@ public class Detail implements Comparable {
 	}
 
 	@Override
-	public int compareTo(Object arg0) {
+	public int compareTo(Detail arg0) {
 		// TODO Auto-generated method stub
-		return this.material.compareTo(((Detail) arg0).getMaterial());
+		return this.material.compareTo((arg0).getMaterial());
 	}
 
+	public static Edging getLastUsedEdging(int forindex, List<Detail>list) {
+		Edging edging = null;
+		if(forindex>list.size()-1)forindex=list.size()-1;
+		Object material = list.get(forindex).getMaterial();
+		for (int i = forindex-1; i >= 0; i--) {
+			edging = list.get(i).getUsedEdging();
+			if (edging != null&&list.get(i).getMaterial().equals(material)){
+				break;
+			}
+		}
+		return edging;
+	}
+	
+	public static Edging getUsedEdging(Edging[]edgings){
+		ArrayList<Edging>temp= new ArrayList<>();
+		for(Edging edging:edgings)if(edging!=null)temp.add(edging);
+		if(temp.size()!=1)return null;
+		return temp.get(0);
+	}
 }

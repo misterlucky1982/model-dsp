@@ -5,7 +5,8 @@ import java.util.List;
 
 public class Edging implements FullName {
 	
-	private static final String DIFFERENT_EDGINGS = "РАЗНЫЕ КРОМКИ";
+	public static final String DIFFERENT_EDGINGS = "РАЗНЫЕ КРОМКИ";
+	public static final String EMPTY_EDGINGS = "";
 	private Color color;
 	private double thickness;
 	private int width;
@@ -25,7 +26,7 @@ public class Edging implements FullName {
 	public Edging(double thickness, int width){
 		if(thickness<0)thickness=0;
 		if(width<0)width=0;
-		this.color = new Color(true);
+		this.color = new Color(false);
 		this.thickness = thickness;
 		this.width = width;
 	}
@@ -33,13 +34,16 @@ public class Edging implements FullName {
 	public Edging(Color color, double thickness, int width){
 		if(thickness<0)thickness=0;
 		if(width<0)width=0;
+		if(color==null)color=new Color(false);
 		this.color = color;
 		this.thickness = thickness;
 		this.width = width;
 	}
 	
 	public Edging(String colorName, double thickness, int width){
-		this.color = new Color(colorName);
+		if(colorName==null){
+			this.color = new Color(false);
+		}else this.color = new Color(colorName);
 		if(thickness<0)thickness=0;
 		if(width<0)width=0;
 		this.thickness = thickness;
@@ -55,11 +59,15 @@ public class Edging implements FullName {
 	}
 	
 	public void setColor(Color color){
-		this.color = color;
+		if(color==null){
+			this.color=new Color(false);
+		}else this.color = color;
 	}
 	
-	public void setColor(String colorName){
-		this.color = new Color(colorName);
+	public void setColorName(String colorName){
+		if(colorName==null){
+			this.color = new Color(false);
+		}else this.color = new Color(colorName);
 	}
 	
 	public double getThickness(){
@@ -78,39 +86,44 @@ public class Edging implements FullName {
 	public void setWidth(int width){
 		if(width<0)width=0;
 		this.width = width;
-	}
+	}	
 	
 	@Override
-	public boolean equals(Object ob){
-		if(ob==null)return false;
-		if(!ob.getClass().equals(this.getClass()))return false;
-		if(((Edging)ob).thickness!=this.thickness)return false;
-		if(((Edging)ob).width!=this.width)return false;
-		if(!((Edging)ob).getColor().equals(this.color))return false;
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((color == null) ? 0 : color.hashCode());
+		long temp;
+		temp = Double.doubleToLongBits(thickness);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
+		result = prime * result + width;
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Edging other = (Edging) obj;
+		if (color == null) {
+			if (other.color != null)
+				return false;
+		} else if (!color.equals(other.color))
+			return false;
+		if (Double.doubleToLongBits(thickness) != Double.doubleToLongBits(other.thickness))
+			return false;
+		if (width != other.width)
+			return false;
 		return true;
 	}
-	
+
 	@Override
-	public int hashCode(){
-		return this.color.hashCode()+((int)this.thickness)*1111+this.width;
-	}
-	
-	@Override
-	public String toString(){
-		String size;
-		if((int)this.thickness-this.thickness==0){
-			size = ""+(int)this.thickness+"/"+this.width;
-		}else size = String.format("%1$,.1f", this.thickness)+"/"+this.width;
-		if(this.color.getName().equals(Color.UNDEFINED_COLOR)||this.color.getName()
-				.equals(Color.DEFAULT_COLOR)){
-			if(this.thickness==0||this.width==0){
-				return "?????????  ?????????";
-			}else{
-				return size+" default color";
-			}
-		}else if(this.thickness==0||this.width==0){
-			return new String("undefined (color:"+this.color+")");
-		}else return size+" "+this.color.getName();
+	public String toString() {
+		return "Edging [color=" + this.color + ", thickness=" + thickness + ", width=" + width + "]";
 	}
 
 	@Override
@@ -177,7 +190,7 @@ public class Edging implements FullName {
 	
 	public static String getContentInLine(Edging[] edgings){
 		
-		String result = "";
+		String result = Edging.EMPTY_EDGINGS;
 		for(Edging e:edgings){
 			if(e!=null){
 				if(result.length()>0){
@@ -199,14 +212,25 @@ public class Edging implements FullName {
 		return result;
 	}
 	
+	@Deprecated
 	public boolean isUndefined(){
 		return(this.color.getName().equals(Color.UNDEFINED_COLOR)&&this.width==0&&this.thickness==0);
 	}
 	
+	@Deprecated
 	public boolean isDefault(){
 		return this.color.isDefaultValue();
 	}
 	
+	public boolean isDefaultValue(){
+		return this.color.isDefaultValue()&&this.width==0&&this.thickness==0.0;
+	}
+	
+	/**
+	 * instead of this method use:
+	 * Detail.getLastUsedEdging();
+	 */
+	@Deprecated
 	public static Edging getLastUsedEdging(int forindex, List<Detail>list) {
 		Edging edging = null;
 		if(forindex>list.size()-1)forindex=list.size()-1;
@@ -215,20 +239,20 @@ public class Edging implements FullName {
 			edging = list.get(i).getUsedEdging();
 			if (edging != null&&list.get(i).getMaterial().equals(material)){
 				break;
-			}
-				
+			}	
 		}
-		
 		return edging;
 	}
 	
+	/**
+	 * instead of this method use:
+	 * Detail.getUsedEdging()
+	 */
+	@Deprecated
 	public static Edging getUsedEdging(Edging[]edgings){
 		ArrayList<Edging>temp= new ArrayList<>();
 		for(Edging edging:edgings)if(edging!=null)temp.add(edging);
 		if(temp.size()!=1)return null;
 		return temp.get(0);
 	}
-	
-	
-
 }

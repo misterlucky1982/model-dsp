@@ -16,13 +16,10 @@ public class ProxiDspObject {
 		
 	}
 	
-	
 	public long getColorId() {
 		return colorId;
 	}
-
-
-
+	
 	public void setColorId(long colorId) {
 		this.colorId = colorId;
 	}

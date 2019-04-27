@@ -18,7 +18,7 @@ public class Groove implements FullName {
 		if (depth < 0)
 			depth = 0;
 		if (spacing < 0)
-			depth = 0;
+			spacing = 0;
 		this.thickness = thickness;
 		this.depth = depth;
 		this.spacing = spacing;
@@ -55,7 +55,12 @@ public class Groove implements FullName {
 		this.spacing = spacing;
 	}
 
+	@Deprecated
 	public boolean getFaceSide() {
+		return this.faceSide;
+	}
+	
+	public boolean isFaceSide(){
 		return this.faceSide;
 	}
 
@@ -93,7 +98,7 @@ public class Groove implements FullName {
 						if (((Groove) ob).getDepth() == this.depth) {
 							if (((Groove) ob).getThickness() == this.thickness) {
 								if (((Groove) ob).getSpacing() == this.spacing) {
-									if (((Groove) ob).getFaceSide() == this.faceSide)
+									if (((Groove) ob).isFaceSide() == this.faceSide)
 										return true;
 								}
 							}
