@@ -1,7 +1,11 @@
 package by.dsp.model;
 
-public class Material implements FullName, Comparable{
+public class Material implements FullName, Comparable, TransferObject{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private Color color;
 	private int thickness;
 	
@@ -19,12 +23,12 @@ public class Material implements FullName, Comparable{
 	
 	public Material(Color color, int thickness){
 		this.color = color;
-		this.thickness = thickness;
+		this.setThickness(thickness);
 	}
 	
 	public Material(String colorName, int thickness){
 		this.color = new Color(colorName);
-		this.thickness = thickness;
+		this.setThickness(thickness);
 	}
 	
 	public void setColor(Color color){

@@ -3,8 +3,12 @@ package by.dsp.model;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Edging implements FullName {
+public class Edging implements FullName, TransferObject {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public static final String DIFFERENT_EDGINGS = "РАЗНЫЕ КРОМКИ";
 	public static final String EMPTY_EDGINGS = "";
 	private Color color;

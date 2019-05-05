@@ -1,7 +1,11 @@
 package by.dsp.model;
 
-public class Color implements FullName{
+public class Color implements FullName, TransferObject{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String name;
 	private boolean structure;
 	public static final String UNDEFINED_COLOR = "undefined";
@@ -69,7 +73,6 @@ public class Color implements FullName{
 	public boolean equals(Object ob){
 		if(ob==null)return false;
 		if(!ob.getClass().equals(this.getClass()))return false;
-		if(((Color)ob).getName().equals(UNDEFINED_COLOR))return false;
 		if(((Color)ob).isStructure()==this.structure){
 			if(((Color)ob).getName().equals(this.name))return true;
 		}

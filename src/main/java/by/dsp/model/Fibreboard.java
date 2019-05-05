@@ -2,6 +2,10 @@ package by.dsp.model;
 
 public final class Fibreboard extends Material {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public static final String FIBREBOARD = "ДВП";
 	public static final int DEFAULT_THICKNESS = 4;
 

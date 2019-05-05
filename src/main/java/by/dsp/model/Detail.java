@@ -5,8 +5,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class Detail implements Comparable<Detail> {
+public class Detail implements Comparable<Detail>, TransferObject {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public static final int MINIMUM_EDGING_SIZE = 80;
 	public static final int MINIMUM_SHORT_SIZE_FOR_LONG_EDGING = 70;
 	public static final int ADDITION_FOR_DOUBLE_LAYERED_DETAIL = 20;

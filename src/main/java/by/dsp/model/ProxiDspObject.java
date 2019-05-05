@@ -1,7 +1,11 @@
 package by.dsp.model;
 
-public class ProxiDspObject {
+public class ProxiDspObject implements TransferObject{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private long colorId;
 	private String colorName;
 	private boolean colorStructure;

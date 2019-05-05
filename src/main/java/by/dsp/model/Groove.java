@@ -1,7 +1,11 @@
 package by.dsp.model;
 
-public class Groove implements FullName {
+public class Groove implements FullName, TransferObject{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private double thickness;
 	private double depth;
 	private double spacing;

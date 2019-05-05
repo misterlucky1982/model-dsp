@@ -1,7 +1,11 @@
 package by.dsp.model;
 
-public class QuarterSpace implements FullName{
+public class QuarterSpace implements FullName, TransferObject{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private double depth;
 	private double spacing;
 	private boolean faceSide;
@@ -11,9 +15,9 @@ public class QuarterSpace implements FullName{
 	}
 	
 	public QuarterSpace(double depth, double spacing,boolean face){
-		this.depth = depth;
-		this.spacing = spacing;
-		this.faceSide = face;
+		this.setDepth(depth);
+		this.setSpacing(spacing);
+		this.setFaceSide(face);
 	}
 	
 	public void setSpacing(double spacing){
