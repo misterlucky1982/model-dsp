@@ -826,7 +826,7 @@ public class Detail implements Comparable<Detail>, TransferObject {
 			copyGrooves(detail, temp);
 			copyQuaterSpaces(detail, temp);
 			copyAndCheckingDoubleLayeringAndMilling(detail, temp, remark, result);
-			temp.remark = remark.toString();
+			temp.remark = detail.detailScheme!=null?"(рис."+detail.detailScheme.toString()+")"+remark.toString():remark.toString();
 			result.add(temp);
 		}
 		return result.stream().sorted((d1, d2) -> d1.compareTo(d2)).collect(Collectors.toList());
