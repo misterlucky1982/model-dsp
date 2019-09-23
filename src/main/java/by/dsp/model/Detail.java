@@ -12,9 +12,9 @@ public class Detail implements Comparable<Detail>, TransferObject {
 	 */
 	private static final long serialVersionUID = 1L;
 	public static final int MINIMUM_EDGING_SIZE = 80;
-	public static final int MINIMUM_SHORT_SIZE_FOR_LONG_EDGING = 70;
+	public static final int MINIMUM_SHORT_SIZE_FOR_LONG_EDGING = 80;
 	public static final int ADDITION_FOR_DOUBLE_LAYERED_DETAIL = 20;
-	public static final int MINIMUM_SIZE = 70;
+	public static final int MINIMUM_SIZE = 80;
 	public static final int CUT_WIDTH = 4;
 	public static final int MAX_HEIGHT = 2780;
 	public static final int MAX_WIDTH = 2050;
@@ -909,12 +909,13 @@ public class Detail implements Comparable<Detail>, TransferObject {
 		Edging ed[] = temp.getEdging();
 		if(temp.width<Detail.MINIMUM_EDGING_SIZE&&(ed[0]!=null&&ed[1]!=null)){
 			if(temp.width<Detail.MINIMUM_SIZE){
-				temp.width=(int)((double)temp.width-ed[0].getThickness()-ed[1].getThickness());
+				temp.width=(int)((double)temp.width);
 				int width = temp.width;
 				temp.width = Detail.MINIMUM_SIZE;
-				temp.operations.add(Operation.TO_17);
+				temp.operations.add(Operation.TO_21);
+				temp.operations.add(Operation.TO_16);
 				temp.operations.add(Operation.TO_41);
-				remark.append("перед оклейкой обрезать в размер:"+temp.height+"x"+width);
+				remark.append("готовый размер:"+temp.height+"x"+width);
 				return true;
 			}
 			temp.width=(int)((double)temp.width-ed[0].getThickness()-ed[1].getThickness());
@@ -971,12 +972,12 @@ public class Detail implements Comparable<Detail>, TransferObject {
 		}
 		if(temp.height<Detail.MINIMUM_EDGING_SIZE&&(ed[2]!=null&&ed[3]!=null)){
 			if(temp.height<Detail.MINIMUM_SIZE){
-				temp.height=(int)((double)temp.height-ed[0].getThickness()-ed[1].getThickness());
 				int height = temp.height;
 				temp.height = Detail.MINIMUM_SIZE;
-				temp.operations.add(Operation.TO_17);
+				temp.operations.add(Operation.TO_21);
+				temp.operations.add(Operation.TO_16);
 				temp.operations.add(Operation.TO_41);
-				remark.append("перед оклейкой обрезать в размер:"+temp.height+"x"+height);
+				remark.append("готовый размер:"+height+"x"+temp.width);
 				return true;
 			}
 			temp.height=(int)((double)temp.height-ed[0].getThickness()-ed[1].getThickness());
