@@ -12,12 +12,15 @@ public class Detail implements Comparable<Detail>, TransferObject {
 	 */
 	private static final long serialVersionUID = 1L;
 	public static final int MINIMUM_EDGING_SIZE = 80;
+	public static final int MINIMUM_EDGING_SIZE_FOR_SHORT_DETAIL = 80;
+	public static final int SIZE_THRESHOLD = 150;
 	public static final int MINIMUM_SHORT_SIZE_FOR_LONG_EDGING = 80;
 	public static final int ADDITION_FOR_DOUBLE_LAYERED_DETAIL = 20;
 	public static final int MINIMUM_SIZE = 80;
 	public static final int CUT_WIDTH = 4;
 	public static final int MAX_HEIGHT = 2780;
 	public static final int MAX_WIDTH = 2050;
+	public static final int MIN_CUT_SIZE = 50;
 
 	private Object detailScheme;
 	private List<Detail> primaryDetailsForCut;
@@ -823,6 +826,7 @@ public class Detail implements Comparable<Detail>, TransferObject {
 				if (!check3from4SidesWithShortSize(detail, temp, remark))
 					checkingEdgedSidesSize(detail, temp, remark);
 			}
+			checkMinimumSizeForUnEdgedDetails(detail,temp,remark);
 			copyGrooves(detail, temp);
 			copyQuaterSpaces(detail, temp);
 			copyAndCheckingDoubleLayeringAndMilling(detail, temp, remark, result);
@@ -1099,6 +1103,21 @@ public class Detail implements Comparable<Detail>, TransferObject {
 		return result;
 	}
 
+	private static void checkMinimumSizeForUnEdgedDetails(Detail detail, Detail temp, StringBuilder remark){
+		boolean result = false;
+		Edging[]edgings = temp.getEdging();
+		if(edgings[0]==null&&edgings[2]==null&&temp.getWidth()<MIN_CUT_SIZE){
+			temp.width = MIN_CUT_SIZE;
+			result = true;
+		}else{
+			if(edgings[1]==null&&edgings[3]==null&&temp.height<MIN_CUT_SIZE){
+				temp.height = MIN_CUT_SIZE;
+				result = true;
+			}
+		}
+		if(result)remark.append("обрезать в размер: "+detail.height+"x"+detail.width);
+	}
+	
 	private static boolean checkingShortEdgedSides(Detail detail, Detail temp, StringBuilder remark) {
 		boolean result = false;
 		Edging[] ed = detail.getEdging();
