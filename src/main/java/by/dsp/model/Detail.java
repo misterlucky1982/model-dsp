@@ -1105,17 +1105,36 @@ public class Detail implements Comparable<Detail>, TransferObject {
 
 	private static void checkMinimumSizeForUnEdgedDetails(Detail detail, Detail temp, StringBuilder remark){
 		boolean result = false;
+		boolean x2 = false;
 		Edging[]edgings = temp.getEdging();
 		if(edgings[0]==null&&edgings[2]==null&&temp.getWidth()<MIN_CUT_SIZE){
-			temp.width = MIN_CUT_SIZE;
 			result = true;
+			if(temp.getAmount()%2==0){
+				temp.amount = detail.amount/2;
+				temp.width = detail.width*2+CUT_WIDTH;
+				x2 = true;
+			}else{
+			temp.width = MIN_CUT_SIZE;
+			}
 		}else{
 			if(edgings[1]==null&&edgings[3]==null&&temp.height<MIN_CUT_SIZE){
-				temp.height = MIN_CUT_SIZE;
 				result = true;
+				if(temp.getAmount()%2==0){
+					temp.height = detail.height*2+CUT_WIDTH;
+					temp.amount = detail.amount/2;
+					x2 = true;
+				}else{
+				temp.height = MIN_CUT_SIZE;
+				}
 			}
 		}
-		if(result)remark.append("обрезать в размер: "+detail.height+"x"+detail.width);
+		if(result){
+			temp.operations.add(Operation.TO_17);
+			remark.append("обрезать в размер: "+detail.height+"x"+detail.width);
+			if(x2){
+				remark.append(" - "+detail.amount+"шт");
+			}
+		}
 	}
 	
 	private static boolean checkingShortEdgedSides(Detail detail, Detail temp, StringBuilder remark) {
